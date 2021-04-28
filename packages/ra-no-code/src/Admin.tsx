@@ -11,25 +11,27 @@ import {
     ResourceConfigurationProvider,
 } from './ResourceConfiguration';
 import { Layout, Ready } from './ui';
+import { Application } from './ApplicationsDashboard';
 
-const dataProvider = localStorageDataProvider();
+export const Admin = ({ application, ...props }: AdminProps) => {
+    const dataProvider = localStorageDataProvider({
+        localStorageKey: `@@ra-no-code/${application.name}/data`,
+    });
+    return (
+        <ResourceConfigurationProvider
+            dataProvider={dataProvider}
+            storageKey={`@@ra-no-code/${application.name}`}
+        >
+            <InnerAdmin {...props} dataProvider={dataProvider} />
+        </ResourceConfigurationProvider>
+    );
+};
 
-export const Admin = (props: AdminProps) => (
-    <ResourceConfigurationProvider dataProvider={dataProvider}>
-        <InnerAdmin {...props} />
-    </ResourceConfigurationProvider>
-);
-
-const InnerAdmin = (props: AdminProps) => {
+const InnerAdmin = (props: RaAdminProps) => {
     const [resources] = useResourcesConfiguration();
     const hasResources = !!resources && Object.keys(resources).length > 0;
     return (
-        <RaAdmin
-            dataProvider={dataProvider}
-            ready={Ready}
-            layout={Layout}
-            {...props}
-        >
+        <RaAdmin ready={Ready} layout={Layout} {...props}>
             {hasResources
                 ? Object.keys(resources).map(resource => (
                       <Resource
@@ -46,4 +48,6 @@ const InnerAdmin = (props: AdminProps) => {
     );
 };
 
-interface AdminProps extends Omit<RaAdminProps, 'dataProvider'> {}
+interface AdminProps extends Omit<RaAdminProps, 'dataProvider'> {
+    application: Application;
+}

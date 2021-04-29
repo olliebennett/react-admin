@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-    Admin as RaAdmin,
-    AdminProps as RaAdminProps,
-    Resource,
-} from 'react-admin';
+import { Admin as RaAdmin, AdminProps, Resource } from 'react-admin';
 import localStorageDataProvider from 'ra-data-local-storage';
 import { Create, Edit, List } from './builders';
 import {
@@ -11,9 +7,13 @@ import {
     ResourceConfigurationProvider,
 } from './ResourceConfiguration';
 import { Layout, Ready } from './ui';
-import { Application } from './ApplicationsDashboard';
+import { useApplication } from './ApplicationContext';
 
-export const Admin = ({ application, ...props }: AdminProps) => {
+export const Admin = (props: Omit<AdminProps, 'dataProvider'>) => {
+    const { application } = useApplication();
+    if (!application) {
+        return null;
+    }
     const dataProvider = localStorageDataProvider({
         localStorageKey: `@@ra-no-code/${application.name}/data`,
     });
@@ -22,12 +22,16 @@ export const Admin = ({ application, ...props }: AdminProps) => {
             dataProvider={dataProvider}
             storageKey={`@@ra-no-code/${application.name}`}
         >
-            <InnerAdmin {...props} dataProvider={dataProvider} />
+            <InnerAdmin
+                {...props}
+                title={application.name}
+                dataProvider={dataProvider}
+            />
         </ResourceConfigurationProvider>
     );
 };
 
-const InnerAdmin = (props: RaAdminProps) => {
+const InnerAdmin = (props: AdminProps) => {
     const [resources] = useResourcesConfiguration();
     const hasResources = !!resources && Object.keys(resources).length > 0;
     return (
@@ -47,7 +51,3 @@ const InnerAdmin = (props: RaAdminProps) => {
         </RaAdmin>
     );
 };
-
-interface AdminProps extends Omit<RaAdminProps, 'dataProvider'> {
-    application: Application;
-}

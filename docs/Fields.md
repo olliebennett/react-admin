@@ -907,7 +907,8 @@ export const PostList = (props) => (
 | `perPage`    | Optional | `number`           | 25                               | Maximum number of referenced records to fetch                                       |
 | `sort`       | Optional | `{ field, order }` | `{ field: 'id', order: 'DESC' }` | Sort order to use when fetching the related records, passed to `getManyReference()` |
 
-`<ReferenceManyField>` also accepts the [common field props](./Fields.md#common-field-props).
+`<ReferenceManyField>` also accepts the [common field props](./Fields.md#common-field-props), except `emptyText`.
+To display a custom empty state, use the [`empty` prop](./List.md#empty) of the child `<Datagrid>` instead.
 
 #### Usage
 
